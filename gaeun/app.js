@@ -45,7 +45,7 @@ app.get("/ping", (req, res) => {
 //////////////////////////////
 
 // http -v POST 127.0.0.1:3000/user/signup name="Troye Sivan" email="troye@gmail.com" password="troyepw" profileImage="ts_profile_image.url"
-app.post("/user/signup", async (req, res) => {
+app.post("/users", async (req, res) => {
   const { name, email, password, profileImage } = req.body;
 
   await myDataSource.query(
@@ -66,7 +66,7 @@ const start = async () => {
   try {
     app.listen(PORT, () => console.log(`server is listening on ${PORT}`));
   } catch (err) {
-    console.log(err);
+    console.log(err.message);
   }
 };
 
