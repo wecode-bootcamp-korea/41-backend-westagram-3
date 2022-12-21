@@ -31,8 +31,16 @@ app.use(morgan("combined"));
 app.get("/ping", (request, response) => {
   response.status(201).send("pong");
 });
+
 //create a user
-app.post("/user", (request, response) => {});
+app.post("/userCreate", async (request, response) => {
+  const { name, email, profileImageUrl, password, age } = request.body;
+  await myDataSource.query(
+    `INSERT INTO users (name,email,profile_image,password,age) VALUES (?,?,?,?,?);`,
+    [name, email, profileImageUrl, password, age]
+  );
+  response.status(201).json({ message: "userCreated" });
+});
 
 const PORT = process.env.PORT;
 
