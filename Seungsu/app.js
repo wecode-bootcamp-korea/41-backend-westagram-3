@@ -27,6 +27,8 @@ myDataSource
   });
 app = express();
 
+const PORT = process.env.PORT;
+
 app.use(cors());
 app.use(morgan("tiny"));
 app.use(express.json());
@@ -35,11 +37,23 @@ app.get("/ping", (req, res) => {
   res.json({ message: "pong" });
 });
 
-const server = http.createServer(app);
-const PORT = process.env.PORT;
+app.post("/signup", async (req, res, next) => {
+  const { name, email, password, profileImage } = req.body;
+  await myDataSource.query(
+    `INSERT INTO users(
+      name,
+      email,
+      password,
+      profile_image
+    ) VALUES (?, ?, ?, ?);
+    `,
+    [name, email, password, profileImage]
+  );
+  res.status(200).json({ message: "userCreated" });
+});
 
 const start = async () => {
-  server.listen(PORT, () => console.log(`server is listening ${PORT}`));
+  app.listen(PORT, () => console.log(`server is listening ${PORT}`));
 };
 
 start();
