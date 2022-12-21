@@ -49,6 +49,7 @@ app.post("/signup", async (req, res, next) => {
     `,
     [name, email, password, profileImage]
   );
+  res.json({ message: "userCreated" });
 });
 
 const start = async () => {
