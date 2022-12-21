@@ -27,7 +27,6 @@ myDataSource
   });
 app = express();
 
-// const server = http.createServer(app);
 const PORT = process.env.PORT;
 
 app.use(cors());
@@ -39,7 +38,7 @@ app.get("/ping", (req, res) => {
 });
 
 app.post("/signup", async (req, res, next) => {
-  const { name, email, password, profile_image } = req.body;
+  const { name, email, password, profileImage } = req.body;
   await myDataSource.query(
     `INSERT INTO users(
       name,
@@ -48,10 +47,8 @@ app.post("/signup", async (req, res, next) => {
       profile_image
     ) VALUES (?, ?, ?, ?);
     `,
-    [name, email, password, profile_image]
+    [name, email, password, profileImage]
   );
-
-  res.status(200).json({ message: "userCreated" });
 });
 
 const start = async () => {
