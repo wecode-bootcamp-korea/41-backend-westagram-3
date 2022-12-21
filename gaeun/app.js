@@ -39,6 +39,27 @@ app.get("/ping", (req, res) => {
   res.json({ messgae: "pong!" });
 });
 
+//////////////////////////////
+// Assignment2 - 유저 회원가입 //
+//////////////////////////////
+
+app.post("/users", async (req, res) => {
+  const { name, email, password, profileImage } = req.body;
+
+  await myDataSource.query(
+    `INSERT INTO users(
+      name,
+      email,
+      password,
+      profile_image
+    ) VALUES (?, ?, ?, ?);
+    `,
+    [name, email, password, profileImage]
+  );
+
+  res.status(201).json({ message: "userCreated" });
+});
+
 const start = async () => {
   try {
     app.listen(PORT, () => console.log(`server is listening on ${PORT}`));
