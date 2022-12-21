@@ -1,7 +1,3 @@
 .env
 node_modules/
 db/schema.sql
-db/migrations/20221220050642_create_posts_table.sql
-db/migrations/20221220050715_create_likes_table.sql
-db/migrations/20221220051556_create_comments_table.sql
-db/migrations/20221220053237_alter_posts_column.sql
