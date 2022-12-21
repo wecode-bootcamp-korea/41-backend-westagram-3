@@ -29,15 +29,15 @@ app.use(cors());
 app.use(morgan("combined"));
 
 app.get("/ping", (request, response) => {
-  response.status(201).send("pog");
+  response.status(201).send("pong");
 });
 
 //create a user
 app.post("/userCreate", async (request, response) => {
-  const { name, email, profile_image, password, age } = request.body;
+  const { name, email, profileImageUrl, password, age } = request.body;
   await myDataSource.query(
     `INSERT INTO users (name,email,profile_image,password,age) VALUES (?,?,?,?,?);`,
-    [name, email, profile_image, password, age]
+    [name, email, profileImageUrl, password, age]
   );
   response.status(201).json({ message: "userCreated" });
 });
