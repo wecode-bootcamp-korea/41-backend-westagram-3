@@ -45,7 +45,7 @@ app.get("/ping", (req, res) => {
 
 app.post("/users", async (req, res) => {
   const { name, email, password, profileImage } = req.body;
-
+  console.log(name);
   await myDataSource.query(
     `INSERT INTO users(
       name,
