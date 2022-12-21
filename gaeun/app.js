@@ -35,7 +35,6 @@ app.use(morgan("dev"));
 dotenv.config();
 
 // health check
-// 127.0.0.1:3000/ping
 app.get("/ping", (req, res) => {
   res.json({ messgae: "pong!" });
 });
@@ -44,8 +43,7 @@ app.get("/ping", (req, res) => {
 // Assignment2 - 유저 회원가입 //
 //////////////////////////////
 
-// http -v POST 127.0.0.1:3000/user/signup name="Troye Sivan" email="troye@gmail.com" password="troyepw" profileImage="ts_profile_image.url"
-app.post("/user/signup", async (req, res) => {
+app.post("/users", async (req, res) => {
   const { name, email, password, profileImage } = req.body;
 
   await myDataSource.query(
