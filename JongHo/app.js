@@ -41,7 +41,15 @@ app.post("/userCreate", async (request, response) => {
   );
   response.status(201).json({ message: "userCreated" });
 });
-
+//create a post
+app.post("/postCreate", async (request, response) => {
+  const { title, content, user_id } = request.body;
+  await myDataSource.query(
+    `INSERT INTO posts (title,content,user_id) VALUES (?,?,?);`,
+    [title, content, user_id]
+  );
+  response.status(201).json({ message: "postCreated" });
+});
 const PORT = process.env.PORT;
 
 const start = async () => {
