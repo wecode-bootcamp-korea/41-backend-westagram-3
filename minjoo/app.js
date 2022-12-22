@@ -37,8 +37,9 @@ dotenv.config();
 app.get("/ping", (req, res, next) => {
   res.json({ message: "pong!" });
 });
-
-// # 2. 유저 회원가입
+/////////////////////
+// # 2. 유저 회원가입 //
+/////////////////////
 app.post("/users", async (req, res) => {
   const { id, name, email, profile_image, password } = req.body;
 
