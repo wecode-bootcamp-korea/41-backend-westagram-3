@@ -60,6 +60,7 @@ CREATE TABLE `posts` (
   `title` varchar(100) NOT NULL,
   `content` varchar(3000) DEFAULT NULL,
   `user_id` int NOT NULL,
+  `image_url` varchar(1000) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
