@@ -30,13 +30,17 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
-app.use(morgan("dev"));
+app.use(morgan("combined"));
 
 dotenv.config();
 
+// app.get('/ping', (req, res) => {
+//   res.json({ messgae: 'pong!' });
+// });
 app.get("/ping", (req, res, next) => {
   res.json({ message: "pong!" });
 });
+<<<<<<< HEAD
 /////////////////////
 // # 2. 유저 회원가입 //
 /////////////////////
@@ -56,6 +60,8 @@ app.post("/users", async (req, res) => {
   );
   res.status(201).json({ message: "user created" });
 });
+=======
+>>>>>>> main
 
 const server = http.createServer(app);
 const PORT = process.env.PORT;
