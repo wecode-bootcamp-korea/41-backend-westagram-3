@@ -4,6 +4,7 @@ CREATE TABLE posts(
     title varchar(100) NOT NULL,
     content varchar(3000) DEFAULT NULL,
     user_id INT NOT NULL,
+    image_url varchar(1000) DEFAULT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users (id)
