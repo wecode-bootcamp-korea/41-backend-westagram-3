@@ -44,7 +44,7 @@ app.get("/ping", (req, res) => {
 // Assignment2 - 유저 회원가입 //
 //////////////////////////////
 
-app.post("/users", async (req, res) => {
+app.post("/user/signup", async (req, res) => {
   const { name, email, password, profileImage } = req.body;
 
   await myDataSource.query(
@@ -65,7 +65,7 @@ app.post("/users", async (req, res) => {
 // Assignment3 - 게시글 등록 //
 ////////////////////////////
 
-app.post("/posts", async (req, res) => {
+app.post("/post/created", async (req, res) => {
   const { title, postImage, content, userId } = req.body;
   console.log(title, postImage, content, userId);
 
@@ -87,7 +87,7 @@ app.post("/posts", async (req, res) => {
 ////////////////////////////////
 
 app.get("/posts", async (req, res) => {
-  await myDataSource.manager.query(
+  await myDataSource.query(
     `SELECT
       u.id AS userId,
       u.profile_image AS userProfileImage,
@@ -107,10 +107,10 @@ app.get("/posts", async (req, res) => {
 // Assignment5 - 유저 게시글 조회 //
 ////////////////////////////////
 
-app.get("/posts/:userId", async (req, res) => {
+app.get("/post/userId/:userId", async (req, res) => {
   const { userId } = req.params;
 
-  const [postsList] = await myDataSource.manager.query(
+  const [postsList] = await myDataSource.query(
     `SELECT
       u.id AS userId,
       u.profile_image AS userProfileImage,
@@ -136,8 +136,9 @@ app.get("/posts/:userId", async (req, res) => {
 // Assignment6 - 게시글 수정 //
 ////////////////////////////
 
-app.patch("/posts", async (req, res) => {
-  const { postId, content } = req.body;
+app.patch("/post/edit/:postId", async (req, res) => {
+  const { postId } = req.params;
+  const { content } = req.body;
 
   // 게시글 수정
   await myDataSource.manager.query(
@@ -150,7 +151,7 @@ app.patch("/posts", async (req, res) => {
   );
 
   // 반환
-  const [post] = await myDataSource.manager.query(
+  const [post] = await myDataSource.query(
     `SELECT
       u.id AS userId,
       u.name AS userName,
@@ -170,10 +171,10 @@ app.patch("/posts", async (req, res) => {
 // Assignment7 - 게시글 삭제 //
 ////////////////////////////
 
-app.delete("/posts/:postId", async (req, res) => {
+app.delete("/post/delete/:postId", async (req, res) => {
   const { postId } = req.params;
 
-  await myDataSource.manager.query(
+  await myDataSource.query(
     `DELETE 
     FROM posts 
     WHERE posts.id = ?`,
@@ -186,10 +187,10 @@ app.delete("/posts/:postId", async (req, res) => {
 // Assignment8 - 좋아요 누르기 //
 /////////////////////////////
 
-app.post("/likes", async (req, res) => {
-  const { userId, postId } = req.body;
+app.post("/like/:userId/:postId", async (req, res) => {
+  const { userId, postId } = req.params;
 
-  await myDataSource.manager.query(
+  await myDataSource.query(
     `INSERT INTO 
       likes (user_id, post_id) 
     VALUES (?, ?)
