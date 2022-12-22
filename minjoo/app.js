@@ -30,30 +30,15 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
-app.use(morgan("dev"));
+app.use(morgan("combined"));
 
 dotenv.config();
 
+// app.get('/ping', (req, res) => {
+//   res.json({ messgae: 'pong!' });
+// });
 app.get("/ping", (req, res, next) => {
   res.json({ message: "pong!" });
-});
-
-// # 2. 유저 회원가입
-app.post("/users", async (req, res) => {
-  const { id, name, email, profile_image, password } = req.body;
-
-  await myDataSource.query(
-    `INSERT INTO users(
-		    id,
-		    name,
-		    email,
-        profile_image,
-        password
-		) VALUES (?, ?, ?, ?, ?);
-		`,
-    [id, name, email, profile_image, password]
-  );
-  res.status(201).json({ message: "user created" });
 });
 
 const server = http.createServer(app);
