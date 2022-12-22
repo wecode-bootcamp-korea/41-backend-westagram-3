@@ -110,7 +110,7 @@ app.get("/posts", async (req, res) => {
 app.get("/posts/:userId", async (req, res) => {
   const { userId } = req.params;
 
-  const postsList = await myDataSource.manager.query(
+  const [postsList] = await myDataSource.manager.query(
     `SELECT
       u.id AS userId,
       u.profile_image AS userProfileImage,
