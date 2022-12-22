@@ -35,7 +35,6 @@ app.use(morgan("dev"));
 dotenv.config();
 
 // health check
-// 127.0.0.1:3000/ping
 app.get("/ping", (req, res) => {
   res.json({ messgae: "pong!" });
 });
