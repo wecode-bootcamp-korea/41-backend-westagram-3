@@ -40,28 +40,25 @@ dotenv.config();
 app.get("/ping", (req, res, next) => {
   res.json({ message: "pong!" });
 });
-<<<<<<< HEAD
 /////////////////////
 // # 2. 유저 회원가입 //
 /////////////////////
 app.post("/users", async (req, res) => {
-  const { id, name, email, profile_image, password } = req.body;
+  const { id, name, email, profileImageUrl, password } = req.body;
 
   await myDataSource.query(
     `INSERT INTO users(
 		    id,
 		    name,
 		    email,
-        profile_image,
+        profileImageUrl,
         password
 		) VALUES (?, ?, ?, ?, ?);
 		`,
-    [id, name, email, profile_image, password]
+    [id, name, email, profileImageUrl, password]
   );
   res.status(201).json({ message: "user created" });
 });
-=======
->>>>>>> main
 
 const server = http.createServer(app);
 const PORT = process.env.PORT;
