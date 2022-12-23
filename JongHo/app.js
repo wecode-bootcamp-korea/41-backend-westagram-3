@@ -42,13 +42,13 @@ app.post("/userCreate", async (request, response) => {
 });
 
 //create a post
-app.post("/postCreate", async (request, response) => {
-  const { title, content, user_id, image_url } = request.body;
+app.post("/post", async (request, response) => {
+  const { title, content, userId, imageUrl } = request.body;
   await myDataSource.query(
     `INSERT INTO posts (title,content,user_id,image_url) VALUES (?,?,?,?);`,
-    [title, content, user_id, image_url]
+    [title, content, userId, imageUrl],
+    response.status(201).json({ message: "postCreated" })
   );
-  response.status(201).json({ message: "postCreated" });
 });
 
 //inquire posts
@@ -74,9 +74,9 @@ app.get("/posts", async (request, response) => {
 });
 
 //inquire specific user's posts
-app.get("/postUser/:userId", async (request, response) => {
+app.get("/post/userId/:userId", async (request, response) => {
   const userId = request.params.userId;
-  await myDataSource.query(
+  const results = await myDataSource.query(
     `SELECT
         u.id AS userId,
         u.profile_image AS userProfileImage,
@@ -86,21 +86,16 @@ app.get("/postUser/:userId", async (request, response) => {
     FROM users u
     INNER JOIN posts p
     ON u.id = p.user_id
-    WHERE u.id = ${userId}
+    WHERE u.id = ?
     GROUP BY u.id;
     `,
-    (err, results) => {
-      if (err) {
-        console.error(err);
-      } else {
-        response.status(200).json({ data: results });
-      }
-    }
+    [userId]
   );
+  response.status(200).json({ data: results });
 });
 
 //modify a post
-app.put("/postModify/:postingId", async (request, response) => {
+app.put("/post/:postingId", async (request, response) => {
   const postingId = request.params.postingId;
   const { content } = request.body;
   await myDataSource.query(
@@ -110,7 +105,7 @@ app.put("/postModify/:postingId", async (request, response) => {
     WHERE posts.id=?;`,
     [content, postingId]
   );
-  await myDataSource.query(
+  const [results] = await myDataSource.query(
     `SELECT 
         posts.user_id as userId,
         users.name as userName,
@@ -120,19 +115,14 @@ app.put("/postModify/:postingId", async (request, response) => {
     from posts 
     inner join users 
     on posts.user_id=users.id 
-    where posts.id=${postingId}`,
-    (err, [results]) => {
-      if (err) {
-        console.error(err);
-      } else {
-        response.status(200).json({ data: results });
-      }
-    }
+    where posts.id=?`,
+    [postingId]
   );
+  response.status(200).json({ data: results });
 });
 
 //delete a post
-app.delete("/postDelete/:postingId", async (request, response) => {
+app.delete("/post/:postingId", async (request, response) => {
   const postingId = request.params.postingId;
   await myDataSource.query(
     `DELETE 
@@ -140,18 +130,51 @@ app.delete("/postDelete/:postingId", async (request, response) => {
     WHERE posts.id=?;`,
     [postingId]
   );
-  response.status(201).json({ message: "postingDeleted" });
+  response.status(200).json({ message: "postingDeleted" });
 });
 
 //create a like
+app.post("/likes", async (request, response) => {
+  const { userName, postImageUrl } = request.body;
+  const userId = await myDataSource.query(
+    `SELECT users.id FROM users WHERE users.name=?`,
+    [userName]
+  );
+  const postId = await myDataSource.query(
+    `SELECT posts.id FROM posts WHERE posts.image_url=?;`,
+    [postImageUrl]
+  );
+  await myDataSource.query(
+    `INSERT INTO likes (user_id,post_id) VALUES (?, ?)`,
+    [userId[0].id, postId[0].id]
+  );
+  response.status(201).json({ message: "likeCreated" });
+});
+
+//create and delete a like
 app.post("/postLike/:userId/:postId", async (request, response) => {
   const { userId, postId } = request.params;
   console.log(userId, postId);
-  await myDataSource.query(
-    `INSERT INTO likes (user_id,post_id) VALUES (?, ?)`,
+  const [check] = await myDataSource.query(
+    `SELECT * FROM likes WHERE user_id=? AND post_id=?`,
     [userId, postId]
   );
-  response.status(201).json({ message: "likeCreated" });
+  console.log(check);
+  if (!check) {
+    //Create
+    await myDataSource.query(
+      `INSERT INTO likes (user_id,post_id) VALUES (?, ?)`,
+      [userId, postId]
+    );
+    response.status(201).json({ message: "likeCreated" });
+  } else {
+    //Delete
+    await myDataSource.query(
+      `DELETE FROM likes WHERE user_id=? AND post_id=?`,
+      [userId, postId]
+    );
+    response.status(200).json({ message: "likeDeleted" });
+  }
 });
 
 const PORT = process.env.PORT;
