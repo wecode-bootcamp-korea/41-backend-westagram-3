@@ -172,13 +172,13 @@ app.delete("/posts/:postId", async (req, res) => {
 // # 8.좋아요 //
 //////////////
 app.post("/likes", async (req, res) => {
-  const { user_id, post_id } = req.body;
+  const { userId, postId } = req.body;
 
   const like = await myDataSource.query(
     `SELECT id
     From likes 
     WHERE user_id = ? AND post_id = ?`,
-    [user_id, post_id]
+    [userId, postId]
   );
 
   if (like.length === 0) {
@@ -188,14 +188,14 @@ app.post("/likes", async (req, res) => {
         post_id
           ) VALUES (?, ?);
           `,
-      [user_id, post_id]
+      [userId, postId]
     );
     res.status(201).json({ message: "like created" });
   } else {
     await myDataSource.query(
       `DELETE FROM likes WHERE user_id = ? AND post_id = ?
       `,
-      [user_id, post_id]
+      [userId, postId]
     );
     res.status(201).json({ message: "like deleted" });
   }
