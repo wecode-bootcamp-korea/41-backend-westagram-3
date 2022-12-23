@@ -174,14 +174,15 @@ app.delete("/posts/:postId", async (req, res) => {
 app.post("/likes", async (req, res) => {
   const { userId, postId } = req.body;
 
-  const like = await myDataSource.query(
+  const [like] = await myDataSource.query(
     `SELECT id
     From likes 
     WHERE user_id = ? AND post_id = ?`,
     [userId, postId]
   );
 
-  if (like.length === 0) {
+  // if (!like.length === 0) {
+  if (!like) {
     await myDataSource.query(
       `INSERT INTO likes(
         user_id,
