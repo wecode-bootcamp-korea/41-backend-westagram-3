@@ -65,7 +65,6 @@ app.post("/user", async (req, res) => {
 
 app.post("/post", async (req, res) => {
   const { title, postImage, content, userId } = req.body;
-  console.log(title, postImage, content, userId);
 
   const post = await myDataSource.query(
     `INSERT INTO posts(
