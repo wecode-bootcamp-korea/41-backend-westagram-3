@@ -49,6 +49,7 @@ app.post("/signup", async (req, res, next) => {
     `,
     [name, email, password, profileImage]
   );
+<<<<<<< HEAD
   res.status(201).json({ message: "userCreated" });
 });
 
@@ -146,6 +147,9 @@ app.post("/likeuser", async (req, res, next) => {
     [userId, postId]
   );
   res.status(200).json({ message: "likeCreated" });
+=======
+  res.status(200).json({ message: "userCreated" });
+>>>>>>> main
 });
 
 const start = async () => {
