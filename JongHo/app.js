@@ -133,24 +133,6 @@ app.delete("/post/:postingId", async (request, response) => {
   response.status(200).json({ message: "postingDeleted" });
 });
 
-//create a like
-app.post("/likes", async (request, response) => {
-  const { userName, postImageUrl } = request.body;
-  const userId = await myDataSource.query(
-    `SELECT users.id FROM users WHERE users.name=?`,
-    [userName]
-  );
-  const postId = await myDataSource.query(
-    `SELECT posts.id FROM posts WHERE posts.image_url=?;`,
-    [postImageUrl]
-  );
-  await myDataSource.query(
-    `INSERT INTO likes (user_id,post_id) VALUES (?, ?)`,
-    [userId[0].id, postId[0].id]
-  );
-  response.status(201).json({ message: "likeCreated" });
-});
-
 //create and delete a like
 app.post("/postLike/:userId/:postId", async (request, response) => {
   const { userId, postId } = request.params;
@@ -161,14 +143,14 @@ app.post("/postLike/:userId/:postId", async (request, response) => {
   );
   console.log(check);
   if (!check) {
-    //Create
+    //create
     await myDataSource.query(
       `INSERT INTO likes (user_id,post_id) VALUES (?, ?)`,
       [userId, postId]
     );
     response.status(201).json({ message: "likeCreated" });
   } else {
-    //Delete
+    //delete
     await myDataSource.query(
       `DELETE FROM likes WHERE user_id=? AND post_id=?`,
       [userId, postId]
