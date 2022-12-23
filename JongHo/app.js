@@ -32,7 +32,7 @@ app.get("/ping", (request, response) => {
 });
 
 //create a user
-app.post("/userCreate", async (request, response) => {
+app.post("/user", async (request, response) => {
   const { name, email, profileImageUrl, password, age } = request.body;
   await myDataSource.query(
     `INSERT INTO users (name,email,profile_image,password,age) VALUES (?,?,?,?,?);`,
