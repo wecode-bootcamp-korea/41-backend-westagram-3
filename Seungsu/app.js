@@ -54,7 +54,7 @@ app.post("/signup", async (req, res, next) => {
 
 app.post("/postCreate", async (req, res, next) => {
   const { title, content, imageUrl, userId } = req.body;
-  await myDataSource.manager.query(
+  await myDataSource.query(
     `INSERT INTO posts(
         title,
         content,
@@ -69,7 +69,7 @@ app.post("/postCreate", async (req, res, next) => {
 });
 
 app.get("/posts", async (req, res, next) => {
-  const data = await myDataSource.manager.query(
+  const data = await myDataSource.query(
     `SELECT
     p.user_id as userId,
     users.profile_image as userProfileImage,
@@ -84,7 +84,7 @@ app.get("/posts", async (req, res, next) => {
 
 app.get("/posts/:userId", async (req, res, next) => {
   const userId = req.params.userId;
-  const data = await myDataSource.manager.query(
+  const data = await myDataSource.query(
     `SELECT
     u.id as userId,
     u.profile_image as userProfileImage,
