@@ -43,7 +43,7 @@ app.get("/ping", (req, res) => {
 // Assignment2 - 유저 회원가입 //
 //////////////////////////////
 
-app.post("/user/signup", async (req, res) => {
+app.post("/user", async (req, res) => {
   const { name, email, password, profileImage } = req.body;
 
   await myDataSource.query(
@@ -64,7 +64,7 @@ app.post("/user/signup", async (req, res) => {
 // Assignment3 - 게시글 등록 //
 ////////////////////////////
 
-app.post("/post/created", async (req, res) => {
+app.post("/post", async (req, res) => {
   const { title, postImage, content, userId } = req.body;
   console.log(title, postImage, content, userId);
 
@@ -135,7 +135,7 @@ app.get("/post/userId/:userId", async (req, res) => {
 // Assignment6 - 게시글 수정 //
 ////////////////////////////
 
-app.patch("/post/edit/:postId", async (req, res) => {
+app.patch("/post/:postId", async (req, res) => {
   const { postId } = req.params;
   const { content } = req.body;
 
@@ -170,7 +170,7 @@ app.patch("/post/edit/:postId", async (req, res) => {
 // Assignment7 - 게시글 삭제 //
 ////////////////////////////
 
-app.delete("/post/delete/:postId", async (req, res) => {
+app.delete("/post/:postId", async (req, res) => {
   const { postId } = req.params;
 
   await myDataSource.query(
