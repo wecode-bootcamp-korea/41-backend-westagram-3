@@ -186,18 +186,40 @@ app.delete("/post/delete/:postId", async (req, res) => {
 // Assignment8 - 좋아요 누르기 //
 /////////////////////////////
 
-app.post("/like/:userId/:postId", async (req, res) => {
-  const { userId, postId } = req.params;
+app.post("/like", async (req, res) => {
+  const { userId, postId } = req.body;
 
-  await myDataSource.query(
-    `INSERT INTO 
-      likes (user_id, post_id) 
-    VALUES (?, ?)
-    `,
+  const [likesRecord] = await myDataSource.query(
+    `SELECT
+      likes.id
+    FROM likes
+    WHERE likes.user_id = ?
+    AND likes.post_id = ?`,
     [userId, postId]
   );
 
-  res.status(201).json({ message: "likeCreated" });
+  if (likesRecord.length === 0) {
+    await myDataSource.query(
+      `INSERT INTO
+      likes
+        (user_id, post_id)
+      VALUES (?, ?)
+    `,
+      [userId, postId]
+    );
+
+    res.status(201).json({ message: "likeCreated" });
+  } else {
+    await myDataSource.query(
+      `DELETE
+      FROM likes
+      WHERE likes.id = ?
+    `,
+      [likesRecord.id]
+    );
+
+    res.status(201).json({ message: "likeDeleted" });
+  }
 });
 
 const start = async () => {
