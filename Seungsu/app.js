@@ -101,7 +101,7 @@ app.get("/posts/users/:userId", async (req, res, next) => {
   res.status(200).json({ data: data });
 });
 
-app.patch("/modify/posts/:postId", async (req, res, next) => {
+app.patch("/post/:postId", async (req, res, next) => {
   const postId = req.params.postId;
   const { content } = req.body;
   await myDataSource.query(`UPDATE posts SET content =? WHERE id = ?;`, [
@@ -125,7 +125,7 @@ app.patch("/modify/posts/:postId", async (req, res, next) => {
   res.status(200).json({ data: data });
 });
 
-app.delete("/delete/posts/:postId", async (req, res) => {
+app.delete("/:postId/post", async (req, res) => {
   const postId = req.params.postId;
   await myDataSource.query(
     `DELETE 
