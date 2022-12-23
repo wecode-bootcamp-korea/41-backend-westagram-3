@@ -31,8 +31,6 @@ app.use(express.json());
 app.use(cors());
 app.use(morgan("dev"));
 
-dotenv.config();
-
 // health check
 app.get("/ping", (req, res) => {
   res.json({ messgae: "pong!" });
