@@ -49,11 +49,10 @@ app.post("/signup", async (req, res, next) => {
     `,
     [name, email, password, profileImage]
   );
-<<<<<<< HEAD
   res.status(201).json({ message: "userCreated" });
 });
 
-app.post("/postCreate", async (req, res, next) => {
+app.post("/post", async (req, res, next) => {
   const { title, content, imageUrl, userId } = req.body;
   await myDataSource.query(
     `INSERT INTO posts(
@@ -80,10 +79,10 @@ app.get("/posts", async (req, res, next) => {
     FROM posts p
     INNER JOIN users on p.user_id = users.id`
   );
-  res.status(201).json({ data: data });
+  res.status(200).json({ data: data });
 });
 
-app.get("/posts/:userId", async (req, res, next) => {
+app.get("/posts/users/:userId", async (req, res, next) => {
   const userId = req.params.userId;
   const data = await myDataSource.query(
     `SELECT
@@ -102,7 +101,7 @@ app.get("/posts/:userId", async (req, res, next) => {
   res.status(200).json({ data: data });
 });
 
-app.patch("/modify/:postId", async (req, res, next) => {
+app.patch("/modify/posts/:postId", async (req, res, next) => {
   const postId = req.params.postId;
   const { content } = req.body;
   await myDataSource.query(`UPDATE posts SET content =? WHERE id = ?;`, [
@@ -126,7 +125,7 @@ app.patch("/modify/:postId", async (req, res, next) => {
   res.status(200).json({ data: data });
 });
 
-app.delete("/delete/:postId", async (req, res) => {
+app.delete("/delete/posts/:postId", async (req, res) => {
   const postId = req.params.postId;
   await myDataSource.query(
     `DELETE 
@@ -134,10 +133,10 @@ app.delete("/delete/:postId", async (req, res) => {
      posts 
      WHERE posts.id = ${postId};`
   );
-  res.status(201).json({ message: "postingDeleted" });
+  res.status(200).json({ message: "postingDeleted" });
 });
 
-app.post("/likeuser", async (req, res, next) => {
+app.post("/like", async (req, res, next) => {
   const { userId, postId } = req.body;
   await myDataSource.query(
     `INSERT INTO likes(
@@ -146,10 +145,7 @@ app.post("/likeuser", async (req, res, next) => {
       ) VALUES (?, ?);`,
     [userId, postId]
   );
-  res.status(200).json({ message: "likeCreated" });
-=======
-  res.status(200).json({ message: "userCreated" });
->>>>>>> main
+  res.status(201).json({ message: "likeCreated" });
 });
 
 const start = async () => {
