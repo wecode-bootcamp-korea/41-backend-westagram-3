@@ -746,11 +746,7 @@ FodyWeavers.xsd
 my_settings.py
 
 # schema.sql은 개별 로컬 환경에 따라 그 세부 내용이 다를 수 있으니 다른 개발자들과 함께 관리하는 순간 많은 에러를 낼 가능성이 있습니다. 
-<<<<<<< HEAD
 .db/schema.sql
-=======
-schema.sql
->>>>>>> main
 
 #VScode
 .vscode/

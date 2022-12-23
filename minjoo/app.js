@@ -198,7 +198,7 @@ app.post("/likes", async (req, res) => {
       `,
       [userId, postId]
     );
-    res.status(201).json({ message: "like deleted" });
+    res.status(200).json({ message: "like deleted" });
   }
 });
 
