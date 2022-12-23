@@ -1,11 +1,3 @@
-// const http = require("http");
-// const express = require("express");
-// const cors = require("cors");
-// const morgan = require("morgan");
-// const dotenv = require("dotenv");
-
-// dotenv.config();
-
 require("dotenv").config();
 
 const express = require("express");
