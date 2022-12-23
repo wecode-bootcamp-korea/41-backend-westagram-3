@@ -198,7 +198,7 @@ app.post("/like", async (req, res) => {
     [userId, postId]
   );
 
-  if (likesRecord.length === 0) {
+  if (!likesRecord) {
     await myDataSource.query(
       `INSERT INTO
       likes
@@ -218,7 +218,7 @@ app.post("/like", async (req, res) => {
       [likesRecord.id]
     );
 
-    res.status(201).json({ message: "likeDeleted" });
+    res.status(200).json({ message: "likeDeleted" });
   }
 });
 
