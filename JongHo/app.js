@@ -136,12 +136,10 @@ app.delete("/post/:postingId", async (request, response) => {
 //create and delete a like
 app.post("/postLike/:userId/:postId", async (request, response) => {
   const { userId, postId } = request.params;
-  console.log(userId, postId);
   const [check] = await myDataSource.query(
     `SELECT * FROM likes WHERE user_id=? AND post_id=?`,
     [userId, postId]
   );
-  console.log(check);
   if (!check) {
     //create
     await myDataSource.query(
