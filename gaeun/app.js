@@ -4,6 +4,7 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const { DataSource } = require("typeorm");
 
@@ -59,6 +60,36 @@ app.post("/signUp", async (req, res) => {
   );
 
   res.status(201).json({ message: "userCreated" });
+});
+
+// Bcrypt Verification 및 JWT 발급하기
+app.post("/signIn", async (req, res) => {
+  const { email, password } = req.body;
+
+  const [userData] = await myDataSource.query(
+    `SELECT
+      *
+    FROM 
+      users
+    WHERE 
+      email = ?`,
+    [email]
+  );
+
+  if (!userData) {
+    return res.status(401).json({ message: "Invalid User" });
+  }
+
+  const result = await bcrypt.compare(password, userData.password);
+
+  if (!result) {
+    return res.status(401).json({ message: "Invalid User" });
+  }
+
+  const payLoad = userData.id;
+  const jwtToken = jwt.sign(payLoad, process.env.secretKey);
+
+  return res.status(201).json({ accessToken: jwtToken });
 });
 
 ////////////////////////////
