@@ -1,10 +1,12 @@
+const dotenv = require("dotenv");
+
+dotenv.config();
+
 const http = require("http");
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
-const dotenv = require("dotenv");
-
-dotenv.config();
+const bcrypt = require("bcrypt");
 
 const { DataSource } = require("typeorm");
 
@@ -39,6 +41,8 @@ app.get("/ping", (req, res) => {
 
 app.post("/signup", async (req, res, next) => {
   const { name, email, password, profileImage } = req.body;
+  const saltRounds = 10;
+  const hashPassword = await bcrypt.hash(password, saltRounds);
   await myDataSource.query(
     `INSERT INTO users(
       name,
@@ -47,7 +51,7 @@ app.post("/signup", async (req, res, next) => {
       profile_image
     ) VALUES (?, ?, ?, ?);
     `,
-    [name, email, password, profileImage]
+    [name, email, hashPassword, profileImage]
   );
   res.status(200).json({ message: "userCreated" });
 });
