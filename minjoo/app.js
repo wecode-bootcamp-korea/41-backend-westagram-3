@@ -1,8 +1,17 @@
 require("dotenv").config();
 
+const http = require("http");
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
+// bcrypt 모듈 import
+const bcrypt = require("bcrypt");
+// jsonwebtoken 라이브러리 import
+const jwt = require("jsonwebtoken"); // (1)
+// Cost Factor
+const saltRounds = 12;
+// 실제로 Secret Key는 노출되면 안 되기 때문에 환경변수로 관리해 주어야 합니다.
+const secretKey = process.env.SECRET_KEY; // (3)
 
 const { DataSource } = require("typeorm");
 
@@ -30,10 +39,49 @@ app.use(express.json());
 app.use(cors());
 app.use(morgan("dev"));
 
-dotenv.config();
+// dotenv.config();
 
 app.get("/ping", (req, res, next) => {
   res.json({ message: "pong!" });
+});
+
+//////////////////////////////////////
+// ## 2. 로그인 정보 확인 & JWT 토큰 발급 //
+//////////////////////////////////////
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  // 1. 입력받은 email 과 매치되는 hashedPassword 를 DB 로부터 가져오기
+  // select hashedPassword from users where email = 입력값
+  const [{ hashedPassword }] = await myDataSource.query(
+    `SELECT password AS hashedPassword FROM users WHERE email = ?;
+		`,
+    [email]
+  );
+
+  // 2. password 와 DB 에서 가져온 hashedPassword 가 일치하는지 체크
+  const checkHash = async (password, hashedPassword) => {
+    return await bcrypt.compare(password, hashedPassword); // (1)
+  };
+
+  // password 와 DB 에서 가져온 hashedPassword 가 일치하면
+  // 3-1. JWT 발급
+  if (await checkHash(password, hashedPassword)) {
+    // 실제로 전달할 내용인 Payload 정의
+    const payLoad = {
+      email: email,
+      password: hashedPassword,
+    };
+
+    // sign() method로 JWT 발급, 첫번째 인자로 Payload가 두번째 인자로 Secret Key가 들어 갑니다.
+    // 세번째 인자로 option을 추가 할 수 있는데, option이 존재하지 않으면 HS256 알고리즘으로 JWT가 발급 됩니다.
+    const jwtToken = jwt.sign(payLoad, secretKey); // (4)
+    res.status(200).json({ accessToken: jwtToken });
+  }
+  // 3-2. password 와 DB 에서 가져온 hashedPassword 가 다르면 "message" : "Invalid User" 띄우기
+  else {
+    res.status(200).json({ message: "Invalid User" });
+  }
 });
 
 /////////////////////
@@ -41,6 +89,12 @@ app.get("/ping", (req, res, next) => {
 /////////////////////
 app.post("/users", async (req, res) => {
   const { id, name, email, profileImageUrl, password } = req.body;
+
+  const makeHash = async (password, saltRounds) => {
+    // hash() method로 암호화, 첫번째 인자로 암호화 하고 싶은 평문이 두번째 인자로 Cost Factor가 들어갑니다.
+    return await bcrypt.hash(password, saltRounds);
+  };
+  const hashedPassword = await makeHash(password, saltRounds);
 
   await myDataSource.query(
     `INSERT INTO users(
@@ -51,7 +105,7 @@ app.post("/users", async (req, res) => {
         password
 		) VALUES (?, ?, ?, ?, ?);
 		`,
-    [id, name, email, profileImageUrl, password]
+    [id, name, email, profileImageUrl, hashedPassword]
   );
   res.status(201).json({ message: "user created" });
 });
