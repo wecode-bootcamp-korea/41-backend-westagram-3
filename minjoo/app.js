@@ -36,8 +36,6 @@ app.use(express.json());
 app.use(cors());
 app.use(morgan("dev"));
 
-// dotenv.config();
-
 app.get("/ping", (req, res, next) => {
   res.json({ message: "pong!" });
 });
