@@ -33,11 +33,13 @@ app.get("/ping", (request, response) => {
 });
 
 //create a user
-app.post("/userCreate", async (request, response) => {
+app.post("/user", async (request, response) => {
   const { name, email, profileImageUrl, password, age } = request.body;
+  const saltOrRounds = 12;
+  const hashPassword = await bcrypt.hash(password, saltOrRounds);
   await myDataSource.query(
     `INSERT INTO users (name,email,profile_image,password,age) VALUES (?,?,?,?,?);`,
-    [name, email, profileImageUrl, password, age]
+    [name, email, profileImageUrl, hashPassword, age]
   );
   response.status(201).json({ message: "userCreated" });
 });
