@@ -70,7 +70,7 @@ app.post("/login", async (req, res) => {
   }
   // 2-2. password 와 DB 에서 가져온 hashedPassword 가 다르면 "message" : "Invalid User" 띄우기
   else {
-    res.status(200).json({ message: "Invalid User" });
+    res.status(401).json({ message: "Invalid User" });
   }
 });
 
