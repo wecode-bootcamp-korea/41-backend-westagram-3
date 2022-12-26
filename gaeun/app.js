@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
+const bcrypt = require("bcrypt");
 
 const { DataSource } = require("typeorm");
 
@@ -43,6 +44,9 @@ app.get("/ping", (req, res) => {
 app.post("/user", async (req, res) => {
   const { name, email, password, profileImage } = req.body;
 
+  const saltRounds = 12;
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
+
   await myDataSource.query(
     `INSERT INTO users(
       name,
@@ -51,10 +55,19 @@ app.post("/user", async (req, res) => {
       profile_image
     ) VALUES (?, ?, ?, ?);
     `,
-    [name, email, password, profileImage]
+    [name, email, hashedPassword, profileImage]
   );
 
   res.status(201).json({ message: "userCreated" });
+});
+
+// Bcrypt Verification 및 JWT 발급하기
+
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  res.status(201).json({ accessToken: accessToken });
+  res.status(200).json({ message: "Invaild User" });
 });
 
 ////////////////////////////
