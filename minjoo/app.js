@@ -60,7 +60,7 @@ app.post("/login", async (req, res) => {
     // 실제로 전달할 내용인 Payload 정의
     const payLoad = {
       email: email,
-      password: hashedPassword,
+      password: password,
     };
 
     // sign() method로 JWT 발급, 첫번째 인자로 Payload가 두번째 인자로 Secret Key가 들어 갑니다.
@@ -103,6 +103,7 @@ app.post("/users", async (req, res) => {
 app.post("/posts", async (req, res) => {
   const { id, title, content, userId, imageUrl, jwt } = req.body;
 
+  //   프론트에서 전달받은 JWT 와 서버에서 생성한 JWT 가 일치하면
   if (jwt) {
     await myDataSource.query(
       `INSERT INTO posts(
