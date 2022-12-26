@@ -80,11 +80,16 @@ app.post("/login", async (req, res) => {
 app.post("/users", async (req, res) => {
   const { id, name, email, profileImageUrl, password } = req.body;
 
+<<<<<<< HEAD
   const makeHash = async (password, saltRounds) => {
     // hash() method로 암호화, 첫번째 인자로 암호화 하고 싶은 평문이 두번째 인자로 Cost Factor가 들어갑니다.
     return await bcrypt.hash(password, saltRounds);
   };
   const hashedPassword = await makeHash(password, saltRounds);
+=======
+  // hash() method로 암호화, 첫번째 인자로 암호화 하고 싶은 평문이 두번째 인자로 Cost Factor가 들어갑니다.
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
+>>>>>>> main
 
   await myDataSource.query(
     `INSERT INTO users(
