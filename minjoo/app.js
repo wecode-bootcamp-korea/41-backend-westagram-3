@@ -4,13 +4,10 @@ const http = require("http");
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
-// bcrypt 모듈 import
 const bcrypt = require("bcrypt");
-// jsonwebtoken 라이브러리 import
 const jwt = require("jsonwebtoken"); // (1)
-// Cost Factor
+
 const saltRounds = 12;
-// 실제로 Secret Key는 노출되면 안 되기 때문에 환경변수로 관리해 주어야 합니다.
 const secretKey = process.env.SECRET_KEY; // (3)
 
 const { DataSource } = require("typeorm");
@@ -52,7 +49,6 @@ app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   // 1. 입력받은 email 과 매치되는 hashedPassword 를 DB 로부터 가져오기
-  // select hashedPassword from users where email = 입력값
   const [{ hashedPassword }] = await myDataSource.query(
     `SELECT password AS hashedPassword FROM users WHERE email = ?;
 		`,
