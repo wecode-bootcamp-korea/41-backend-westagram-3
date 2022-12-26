@@ -1,8 +1,12 @@
 require("dotenv").config();
 
+const http = require("http");
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
+const bcrypt = require("bcrypt");
+// Cost Factor
+const saltRounds = 12;
 
 const { DataSource } = require("typeorm");
 
@@ -30,8 +34,6 @@ app.use(express.json());
 app.use(cors());
 app.use(morgan("dev"));
 
-dotenv.config();
-
 app.get("/ping", (req, res, next) => {
   res.json({ message: "pong!" });
 });
@@ -42,6 +44,9 @@ app.get("/ping", (req, res, next) => {
 app.post("/users", async (req, res) => {
   const { id, name, email, profileImageUrl, password } = req.body;
 
+  // hash() method로 암호화, 첫번째 인자로 암호화 하고 싶은 평문이 두번째 인자로 Cost Factor가 들어갑니다.
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
+
   await myDataSource.query(
     `INSERT INTO users(
 		    id,
@@ -51,7 +56,7 @@ app.post("/users", async (req, res) => {
         password
 		) VALUES (?, ?, ?, ?, ?);
 		`,
-    [id, name, email, profileImageUrl, password]
+    [id, name, email, profileImageUrl, hashedPassword]
   );
   res.status(201).json({ message: "user created" });
 });
