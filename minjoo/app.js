@@ -59,14 +59,9 @@ app.post("/login", async (req, res) => {
     [email]
   );
 
-  // 2. password 와 DB 에서 가져온 hashedPassword 가 일치하는지 체크
-  const checkHash = async (password, hashedPassword) => {
-    return await bcrypt.compare(password, hashedPassword); // (1)
-  };
-
-  // password 와 DB 에서 가져온 hashedPassword 가 일치하면
-  // 3-1. JWT 발급
-  if (await checkHash(password, hashedPassword)) {
+  // 2. password 와 DB 에서 가져온 hashedPassword 가 일치하면
+  // 2-1. JWT 발급
+  if (await bcrypt.compare(password, hashedPassword)) {
     // 실제로 전달할 내용인 Payload 정의
     const payLoad = {
       email: email,
@@ -78,7 +73,7 @@ app.post("/login", async (req, res) => {
     const jwtToken = jwt.sign(payLoad, secretKey); // (4)
     res.status(200).json({ accessToken: jwtToken });
   }
-  // 3-2. password 와 DB 에서 가져온 hashedPassword 가 다르면 "message" : "Invalid User" 띄우기
+  // 2-2. password 와 DB 에서 가져온 hashedPassword 가 다르면 "message" : "Invalid User" 띄우기
   else {
     res.status(200).json({ message: "Invalid User" });
   }
