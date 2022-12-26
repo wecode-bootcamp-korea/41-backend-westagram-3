@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
+const bcrypt = require("bcrypt");
 
 const { DataSource } = require("typeorm");
 
@@ -40,8 +41,11 @@ app.get("/ping", (req, res) => {
 // Assignment2 - 유저 회원가입 //
 //////////////////////////////
 
-app.post("/user", async (req, res) => {
+app.post("/signUp", async (req, res) => {
   const { name, email, password, profileImage } = req.body;
+
+  const saltRounds = 12;
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
 
   await myDataSource.query(
     `INSERT INTO users(
@@ -51,7 +55,7 @@ app.post("/user", async (req, res) => {
       profile_image
     ) VALUES (?, ?, ?, ?);
     `,
-    [name, email, password, profileImage]
+    [name, email, hashedPassword, profileImage]
   );
 
   res.status(201).json({ message: "userCreated" });
