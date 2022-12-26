@@ -11,6 +11,7 @@ const saltRounds = 12;
 const secretKey = process.env.SECRET_KEY; // (3)
 
 const { DataSource } = require("typeorm");
+const e = require("express");
 
 const myDataSource = new DataSource({
   type: process.env.TYPEORM_CONNECTION,
@@ -99,14 +100,15 @@ app.post("/users", async (req, res) => {
   res.status(201).json({ message: "user created" });
 });
 
-///////////////////
-// # 3. 게시글 등록 //
-///////////////////
+/////////////////////////////
+// # 3. 토큰 확인 & 게시글 등록 //
+/////////////////////////////
 app.post("/posts", async (req, res) => {
-  const { id, title, content, userId, imageUrl } = req.body;
+  const { id, title, content, userId, imageUrl, jwt } = req.body;
 
-  await myDataSource.query(
-    `INSERT INTO posts(
+  if (jwt) {
+    await myDataSource.query(
+      `INSERT INTO posts(
         id, 
         title, 
         content, 
@@ -114,9 +116,12 @@ app.post("/posts", async (req, res) => {
         imageUrl
           ) VALUES (?, ?, ?, ?, ?);
           `,
-    [id, title, content, userId, imageUrl]
-  );
-  res.status(201).json({ message: "post created" });
+      [id, title, content, userId, imageUrl]
+    );
+    res.status(201).json({ message: "post created" });
+  } else {
+    res.status(200).json({ message: "Invalid Access Token" });
+  }
 });
 
 ///////////////////////
