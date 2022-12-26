@@ -1,9 +1,9 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const dotenv = require("dotenv");
 const morgan = require("morgan");
-const { appendFile } = require("fs");
-dotenv.config();
+const bcrypt = require("bcrypt");
+
 const { DataSource } = require("typeorm");
 const myDataSource = new DataSource({
   type: process.env.TYPEORM_CONNECTION,
