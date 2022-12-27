@@ -27,7 +27,7 @@ myDataSource.initialize()
     })
 
 
-    app.get('/ping', cors(), function (req, res, next) {
+    app.get('/ping', function (req, res, next) {
         res.json({message: 'pong'})
     })
 
