@@ -86,10 +86,9 @@ app.post("/signIn", async (req, res) => {
     return res.status(401).json({ message: "Invalid User" });
   }
 
-  const payLoad = userData.id;
-  const jwtToken = jwt.sign(payLoad, process.env.secretKey);
+  const jwtToken = jwt.sign({ userId: userData.id }, process.env.secretKey);
 
-  return res.status(201).json({ accessToken: jwtToken });
+  return res.status(200).json({ accessToken: jwtToken });
 });
 
 ////////////////////////////
