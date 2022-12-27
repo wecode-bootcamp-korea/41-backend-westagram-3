@@ -5,7 +5,9 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken"); // (1)
+const jwt = require("jsonwebtoken");
+
+const { validateToken } = require("./auth");
 
 const saltRounds = 12;
 const secretKey = process.env.SECRET_KEY; // (3)
@@ -57,10 +59,15 @@ app.post("/login", async (req, res) => {
   // 2. password 와 DB 에서 가져온 hashedPassword 가 일치하면
   // 2-1. JWT 발급
   if (await bcrypt.compare(password, hashedPassword)) {
+    // user id 가져옴
+    const [{ userId }] = await myDataSource.query(
+      `SELECT id AS userId FROM users WHERE email = ?;
+      `,
+      [email]
+    );
     // 실제로 전달할 내용인 Payload 정의
     const payLoad = {
-      email: email,
-      password: password,
+      userId: userId,
     };
 
     // sign() method로 JWT 발급, 첫번째 인자로 Payload가 두번째 인자로 Secret Key가 들어 갑니다.
@@ -100,13 +107,12 @@ app.post("/users", async (req, res) => {
 /////////////////////////////
 // # 3. 토큰 확인 & 게시글 등록 //
 /////////////////////////////
-app.post("/posts", async (req, res) => {
-  const { id, title, content, userId, imageUrl, jwt } = req.body;
+// validateToken (JWT 인증토큰) 이 유효하지 않으면 게시글 등록하지 않음
+app.post("/posts", validateToken, async (req, res) => {
+  const { id, title, content, userId, imageUrl } = req.body;
 
-  //   프론트에서 전달받은 JWT 와 서버에서 생성한 JWT 가 일치하면
-  if (jwt) {
-    await myDataSource.query(
-      `INSERT INTO posts(
+  await myDataSource.query(
+    `INSERT INTO posts(
         id, 
         title, 
         content, 
@@ -114,12 +120,9 @@ app.post("/posts", async (req, res) => {
         imageUrl
           ) VALUES (?, ?, ?, ?, ?);
           `,
-      [id, title, content, userId, imageUrl]
-    );
-    res.status(201).json({ message: "post created" });
-  } else {
-    res.status(200).json({ message: "Invalid Access Token" });
-  }
+    [id, title, content, userId, imageUrl]
+  );
+  res.status(201).json({ message: "post created" });
 });
 
 ///////////////////////
