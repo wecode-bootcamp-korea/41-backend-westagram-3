@@ -3,6 +3,8 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const validateToken = require("./middleware/auth");
 
 const { DataSource } = require("typeorm");
 const myDataSource = new DataSource({
@@ -59,14 +61,16 @@ app.post("/signIn", async (request, response) => {
   response.status(200).json({ accessToken: jwtToken });
 });
 
-//create a post
-app.post("/post", async (request, response) => {
-  const { title, content, userId, imageUrl } = request.body;
+//create a post using access token
+app.post("/post", validateToken, async (request, response) => {
+  const { title, content, imageUrl } = request.body;
+
   await myDataSource.query(
     `INSERT INTO posts (title,content,user_id,image_url) VALUES (?,?,?,?);`,
-    [title, content, userId, imageUrl],
-    response.status(201).json({ message: "postCreated" })
+    [title, content, request.userId, imageUrl]
   );
+
+  response.status(201).json({ message: "postCreated" });
 });
 
 //inquire posts
