@@ -4,9 +4,11 @@ const cors = require("cors");
 const morgan = require("morgan");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const validateToken = require("./middleware/auth");
 
 const { DataSource } = require("typeorm");
+
+const validateToken = require("./middleware/auth");
+
 const myDataSource = new DataSource({
   type: process.env.TYPEORM_CONNECTION,
   host: process.env.TYPEORM_HOST,
