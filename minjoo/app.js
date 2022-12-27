@@ -40,7 +40,7 @@ app.use(cors());
 app.use(morgan("dev"));
 
 app.get("/ping", (req, res, next) => {
-  res.json({ message: "pong!" });
+  res.json({ message: "pong" });
 });
 
 //////////////////////////////////////
