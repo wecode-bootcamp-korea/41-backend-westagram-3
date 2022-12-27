@@ -25,6 +25,29 @@ myDataSource.initialize()
     .then(() => {
         console.log("Data Source has been initialized!")
     })
+    .catch((err) => {
+        console.error("Error during Data Source initialization", err);
+        myDataSource.destroy();
+      });
+
+///유저회원가입////Assignment 2///// 
+
+app.post("/signup", async (req, res) => {
+    const {name, email, password} = req.body;
+    
+    await myDataSource.query(
+          `
+        INSERT INTO users (
+            name,
+            email,
+            password
+          ) VALUES (?,?,?)
+          `,
+          [name , email, password]
+        );
+        res.status(201).json({ message: "userCreated" })
+});
+
 
 
     app.get('/ping', function (req, res, next) {
