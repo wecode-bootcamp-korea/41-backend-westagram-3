@@ -1,8 +1,9 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const dotenv = require("dotenv");
 const morgan = require("morgan");
-dotenv.config();
+const bcrypt = require("bcrypt");
+
 const { DataSource } = require("typeorm");
 const myDataSource = new DataSource({
   type: process.env.TYPEORM_CONNECTION,
@@ -34,11 +35,28 @@ app.get("/ping", (request, response) => {
 //create a user
 app.post("/user", async (request, response) => {
   const { name, email, profileImageUrl, password, age } = request.body;
+  const saltOrRounds = 12;
+  const hashPassword = await bcrypt.hash(password, saltOrRounds);
   await myDataSource.query(
     `INSERT INTO users (name,email,profile_image,password,age) VALUES (?,?,?,?,?);`,
-    [name, email, profileImageUrl, password, age]
+    [name, email, profileImageUrl, hashPassword, age]
   );
   response.status(201).json({ message: "userCreated" });
+});
+
+//user signin
+app.post("/signIn", async (request, response) => {
+  const { email, password } = request.body;
+  const [userData] = await myDataSource.query(
+    `SELECT * FROM users WHERE email=?`,
+    [email]
+  );
+  const result = await bcrypt.compare(password, userData.password);
+  if (!result) {
+    response.status(401).json({ message: "Invalid User" });
+  }
+  const jwtToken = jwt.sign(userData.id, process.env.SECRET_KEY);
+  response.status(200).json({ accessToken: jwtToken });
 });
 
 //create a post

@@ -4,7 +4,9 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
+const { validateToken } = require("./middleware/auth");
 const { DataSource } = require("typeorm");
 
 const myDataSource = new DataSource({
@@ -61,14 +63,43 @@ app.post("/signUp", async (req, res) => {
   res.status(201).json({ message: "userCreated" });
 });
 
+// Bcrypt Verification 및 JWT 발급하기
+app.post("/signIn", async (req, res) => {
+  const { email, password } = req.body;
+
+  const [userData] = await myDataSource.query(
+    `SELECT
+      *
+    FROM 
+      users
+    WHERE 
+      email = ?`,
+    [email]
+  );
+
+  if (!userData) {
+    return res.status(401).json({ message: "Invalid User" });
+  }
+
+  const result = await bcrypt.compare(password, userData.password);
+
+  if (!result) {
+    return res.status(401).json({ message: "Invalid User" });
+  }
+
+  const jwtToken = jwt.sign({ userId: userData.id }, process.env.secretKey);
+
+  return res.status(200).json({ accessToken: jwtToken });
+});
+
 ////////////////////////////
 // Assignment3 - 게시글 등록 //
 ////////////////////////////
 
-app.post("/post", async (req, res) => {
-  const { title, postImage, content, userId } = req.body;
+app.post("/post", validateToken, async (req, res) => {
+  const { title, postImage, content } = req.body;
 
-  const post = await myDataSource.query(
+  await myDataSource.query(
     `INSERT INTO posts(
       title,
       post_image,
@@ -76,7 +107,7 @@ app.post("/post", async (req, res) => {
       user_id
     ) VALUES (?, ?, ?, ?);
     `,
-    [title, postImage, content, userId]
+    [title, postImage, content, req.userId]
   );
   res.status(201).json({ message: "postCreated" });
 });
