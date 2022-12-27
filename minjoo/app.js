@@ -66,6 +66,7 @@ app.post("/login", async (req, res) => {
       [email]
     );
     // 실제로 전달할 내용인 Payload 정의
+    // payload 에 user id 전달
     const payLoad = {
       userId: userId,
     };
