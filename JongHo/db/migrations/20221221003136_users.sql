@@ -7,7 +7,8 @@ CREATE TABLE users (
   password varchar(200) NOT NULL,
   age INT NOT NULL,
   created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+  updated_at timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT email_constraint UNIQUE (email)
 );
 
 -- migrate:down
