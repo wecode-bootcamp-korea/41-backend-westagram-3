@@ -52,6 +52,28 @@ app.post("/signup", async (req, res, next) => {
   res.status(200).json({ message: "userCreated" });
 });
 
+app.post("/login", async (req, res, next) => {
+  const { email, password } = req.body;
+  const [userData] = await myDataSource.query(
+    `SELECT * FROM users 
+    where email =?
+    `,
+    [email]
+  );
+  if (!userData) {
+    return res.status(401).json({ message: "Invalid User" });
+  }
+  const isMatch = await bcrypt.compare(password, userData.password);
+
+  if (!isMatch) {
+    return res.status(401).json({ message: "Invalid User" });
+  }
+
+  const token = jwt.sign({ id: userData.id }, process.env.secretKey);
+
+  return res.status(200).json({ accessToken: token });
+});
+
 const start = async () => {
   app.listen(PORT, () => console.log(`server is listening ${PORT}`));
 };
