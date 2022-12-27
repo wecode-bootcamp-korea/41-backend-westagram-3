@@ -44,6 +44,21 @@ app.post("/user", async (request, response) => {
   response.status(201).json({ message: "userCreated" });
 });
 
+//user signin
+app.post("/signIn", async (request, response) => {
+  const { email, password } = request.body;
+  const [userData] = await myDataSource.query(
+    `SELECT * FROM users WHERE email=?`,
+    [email]
+  );
+  const result = await bcrypt.compare(password, userData.password);
+  if (!result) {
+    response.status(401).json({ message: "Invalid User" });
+  }
+  const jwtToken = jwt.sign(userData.id, process.env.SECRET_KEY);
+  response.status(200).json({ accessToken: jwtToken });
+});
+
 //create a post
 app.post("/post", async (request, response) => {
   const { title, content, userId, imageUrl } = request.body;
