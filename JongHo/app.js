@@ -52,12 +52,11 @@ app.post("/signIn", async (request, response) => {
     [email]
   );
   const result = await bcrypt.compare(password, userData.password);
-  if (result) {
-    const jwtToken = jwt.sign(userData.id, process.env.SECRET_KEY);
-    response.status(200).json({ accessToken: jwtToken });
-  } else {
+  if (!result) {
     response.status(401).json({ message: "Invalid User" });
   }
+  const jwtToken = jwt.sign(userData.id, process.env.SECRET_KEY);
+  response.status(200).json({ accessToken: jwtToken });
 });
 
 //create a post
