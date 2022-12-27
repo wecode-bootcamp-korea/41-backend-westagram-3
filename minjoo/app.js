@@ -56,9 +56,12 @@ app.post("/login", async (req, res) => {
     [email]
   );
 
-  // 2. password 와 DB 에서 가져온 hashedPassword 가 일치하면
-  // 2-1. JWT 발급
-  if (await bcrypt.compare(password, hashedPassword)) {
+  // 2. password 와 DB 에서 가져온 hashedPassword 가 일치하지 않으면
+  // 2-1. password 와 DB 에서 가져온 hashedPassword 가 다르면 "message" : "Invalid User" 띄우기
+  if (!(await bcrypt.compare(password, hashedPassword)))
+    res.status(401).json({ message: "Invalid User" });
+  // 2-2. password 와 DB 에서 가져온 hashedPassword 가 일치하면 JWT 발급
+  else {
     // payload 에 포함할 user id 가져옴
     const [{ userId }] = await myDataSource.query(
       `SELECT id AS userId FROM users WHERE email = ?;
@@ -75,10 +78,6 @@ app.post("/login", async (req, res) => {
     // 세번째 인자로 option을 추가 할 수 있는데, option이 존재하지 않으면 HS256 알고리즘으로 JWT가 발급 됩니다.
     const jwtToken = jwt.sign(payLoad, secretKey); // (4)
     res.status(200).json({ accessToken: jwtToken });
-  }
-  // 2-2. password 와 DB 에서 가져온 hashedPassword 가 다르면 "message" : "Invalid User" 띄우기
-  else {
-    res.status(401).json({ message: "Invalid User" });
   }
 });
 
@@ -110,18 +109,17 @@ app.post("/users", async (req, res) => {
 /////////////////////////////
 // validateToken (JWT 인증토큰) 이 유효하지 않으면 게시글 등록하지 않음
 app.post("/posts", validateToken, async (req, res) => {
-  const { id, title, content, userId, imageUrl } = req.body;
+  const { title, content, imageUrl } = req.body;
 
   await myDataSource.query(
     `INSERT INTO posts(
-        id, 
         title, 
         content, 
         userId,
         imageUrl
-          ) VALUES (?, ?, ?, ?, ?);
+          ) VALUES (?, ?, ?, ?);
           `,
-    [id, title, content, userId, imageUrl]
+    [title, content, req.userId, imageUrl]
   );
   res.status(201).json({ message: "post created" });
 });
