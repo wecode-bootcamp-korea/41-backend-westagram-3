@@ -51,34 +51,29 @@ app.post("/login", async (req, res) => {
 
   // 1. 입력받은 email 과 매치되는 hashedPassword 를 DB 로부터 가져오기
   const [{ hashedPassword }] = await myDataSource.query(
-    `SELECT password AS hashedPassword FROM users WHERE email = ?;
+    `
+    SELECT password AS hashedPassword 
+    FROM users 
+    WHERE email = ?;
 		`,
     [email]
   );
-
-  // 2. password 와 DB 에서 가져온 hashedPassword 가 일치하지 않으면
-  // 2-1. password 와 DB 에서 가져온 hashedPassword 가 다르면 "message" : "Invalid User" 띄우기
   if (!(await bcrypt.compare(password, hashedPassword)))
     res.status(401).json({ message: "Invalid User" });
-  // 2-2. password 와 DB 에서 가져온 hashedPassword 가 일치하면 JWT 발급
-  else {
-    // payload 에 포함할 user id 가져옴
-    const [{ userId }] = await myDataSource.query(
-      `SELECT id AS userId FROM users WHERE email = ?;
-      `,
-      [email]
-    );
-    // 실제로 전달할 내용인 Payload 정의
-    // payload 에 user id 전달
-    const payLoad = {
-      userId: userId,
-    };
 
-    // sign() method로 JWT 발급, 첫번째 인자로 Payload가 두번째 인자로 Secret Key가 들어 갑니다.
-    // 세번째 인자로 option을 추가 할 수 있는데, option이 존재하지 않으면 HS256 알고리즘으로 JWT가 발급 됩니다.
-    const jwtToken = jwt.sign(payLoad, secretKey); // (4)
-    res.status(200).json({ accessToken: jwtToken });
-  }
+  const [{ userId }] = await myDataSource.query(
+    `
+    SELECT id AS userId 
+    FROM users 
+    WHERE email = ?;
+    `,
+    [email]
+  );
+  const payLoad = {
+    userId: userId,
+  };
+  const jwtToken = jwt.sign(payLoad, secretKey); // (4)
+  res.status(200).json({ accessToken: jwtToken });
 });
 
 /////////////////////
@@ -117,8 +112,8 @@ app.post("/posts", validateToken, async (req, res) => {
         content, 
         userId,
         imageUrl
-          ) VALUES (?, ?, ?, ?);
-          `,
+    ) VALUES (?, ?, ?, ?);
+    `,
     [title, content, req.userId, imageUrl]
   );
   res.status(201).json({ message: "post created" });
@@ -233,7 +228,7 @@ app.post("/likes", async (req, res) => {
       `INSERT INTO likes(
         user_id,
         post_id
-          ) VALUES (?, ?);
+      ) VALUES (?, ?);
           `,
       [userId, postId]
     );
