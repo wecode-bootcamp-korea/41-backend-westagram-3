@@ -13,7 +13,7 @@ const saltRounds = 12;
 const secretKey = process.env.SECRET_KEY; // (3)
 
 const { DataSource } = require("typeorm");
-const e = require("express");
+const express = require("express");
 
 const myDataSource = new DataSource({
   type: process.env.TYPEORM_CONNECTION,
