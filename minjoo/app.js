@@ -87,11 +87,11 @@ app.post("/users", async (req, res) => {
 
   await myDataSource.query(
     `INSERT INTO users(
-		    id,
-		    name,
-		    email,
-        profileImageUrl,
-        password
+      id,
+      name,
+      email,
+      profileImageUrl,
+      password
 		) VALUES (?, ?, ?, ?, ?);
 		`,
     [id, name, email, profileImageUrl, hashedPassword]
@@ -108,10 +108,10 @@ app.post("/posts", validateToken, async (req, res) => {
 
   await myDataSource.query(
     `INSERT INTO posts(
-        title, 
-        content, 
-        userId,
-        imageUrl
+      title, 
+      content, 
+      userId,
+      imageUrl
     ) VALUES (?, ?, ?, ?);
     `,
     [title, content, req.userId, imageUrl]
@@ -173,8 +173,8 @@ app.put("/posts", async (req, res) => {
   // 게시글 수정
   await myDataSource.query(
     `UPDATE posts
-		    SET
-        content = ?
+      SET
+      content = ?
 			WHERE userId = ? AND id = ?
 		`,
     [postingContent, userId, id]
