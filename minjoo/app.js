@@ -59,7 +59,7 @@ app.post("/login", async (req, res) => {
   // 2. password 와 DB 에서 가져온 hashedPassword 가 일치하면
   // 2-1. JWT 발급
   if (await bcrypt.compare(password, hashedPassword)) {
-    // user id 가져옴
+    // payload 에 포함할 user id 가져옴
     const [{ userId }] = await myDataSource.query(
       `SELECT id AS userId FROM users WHERE email = ?;
       `,
