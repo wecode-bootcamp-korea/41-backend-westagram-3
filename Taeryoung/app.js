@@ -49,7 +49,6 @@ app.post("/signup", async (req, res) => {
 });
 
 
-
     app.get('/ping', function (req, res, next) {
         res.json({message: 'pong'})
     })
