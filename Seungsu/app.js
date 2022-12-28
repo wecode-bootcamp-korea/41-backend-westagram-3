@@ -3,6 +3,9 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const validateToken = require("./middleware/auth");
 
 dotenv.config();
 
@@ -39,6 +42,8 @@ app.get("/ping", (req, res) => {
 
 app.post("/signup", async (req, res, next) => {
   const { name, email, password, profileImage } = req.body;
+  const saltRounds = 10;
+  const hashPassword = await bcrypt.hash(password, saltRounds);
   await myDataSource.query(
     `INSERT INTO users(
       name,
@@ -47,13 +52,35 @@ app.post("/signup", async (req, res, next) => {
       profile_image
     ) VALUES (?, ?, ?, ?);
     `,
-    [name, email, password, profileImage]
+    [name, email, hashPassword, profileImage]
   );
   res.status(201).json({ message: "userCreated" });
 });
 
-app.post("/post", async (req, res, next) => {
-  const { title, content, imageUrl, userId } = req.body;
+app.post("/login", async (req, res, next) => {
+  const { email, password } = req.body;
+  const [userData] = await myDataSource.query(
+    `SELECT * FROM users 
+    where email =?
+    `,
+    [email]
+  );
+  if (!userData) {
+    return res.status(401).json({ message: "Invalid User" });
+  }
+  const isMatch = await bcrypt.compare(password, userData.password);
+
+  if (!isMatch) {
+    return res.status(401).json({ message: "Invalid User" });
+  }
+
+  const token = jwt.sign({ id: userData.id }, process.env.secretKey);
+
+  return res.status(200).json({ accessToken: token });
+});
+
+app.post("/post", validateToken, async (req, res, next) => {
+  const { title, content, imageUrl } = req.body;
   await myDataSource.query(
     `INSERT INTO posts(
         title,
@@ -62,7 +89,7 @@ app.post("/post", async (req, res, next) => {
         user_id
       ) VALUES (?, ?, ?, ?);
       `,
-    [title, content, imageUrl, userId]
+    [title, content, imageUrl, req.userId]
   );
 
   res.status(201).json({ message: "postcreated" });
@@ -104,10 +131,12 @@ app.get("/posts/users/:userId", async (req, res, next) => {
 app.patch("/post/:postId", async (req, res, next) => {
   const postId = req.params.postId;
   const { content } = req.body;
-  await myDataSource.query(`UPDATE posts SET content =? WHERE id = ?;`, [
-    content,
-    postId,
-  ]);
+  await myDataSource.query(
+    `UPDATE posts 
+    SET content =? 
+    WHERE id = ?;`,
+    [content, postId]
+  );
   const data = await myDataSource.query(
     `SELECT
     u.id as userId,
