@@ -42,7 +42,7 @@ app.get("/ping", (req, res) => {
 
 app.post("/signup", async (req, res, next) => {
   const { name, email, password, profileImage } = req.body;
-  const saltRounds = 10;
+  const saltRounds = 12;
   const hashPassword = await bcrypt.hash(password, saltRounds);
   await myDataSource.query(
     `INSERT INTO users(
