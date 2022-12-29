@@ -38,39 +38,117 @@ app.get('/ping', function (req, res, next) {
 ///////////////////////////////////
 
 app.post('/signup', async (req, res) => {
-    const { name, email, password } = req.body;
+    const { email, password } = req.body;
 
     await myDataSource.query(
         `
         INSERT INTO users (
-            name,
             email,
-            password
-          ) VALUES (?,?,?)
+            password,
+          ) VALUES (?,?)
           `,
-        [name, email, password]
+        [email, password]
     );
     res.status(201).json({ message: 'userCreated' });
 });
 
-///게시물등록////Assignment 3/////
+////////////////////로그인/////////////////////
+///////Bcrypt Verification 및 JWT 발급하기//////
+app.post('/signIn', async (req, res) => {
+    const { email, password } = req.body;
+
+    const [userData] = await myDataSource.query(
+        `SELECT
+        *
+      FROM 
+        users
+      WHERE 
+        email = ?`,
+        [email]
+    );
+
+    if (!userData) {
+        return res.status(401).json({ message: 'Invalid User' });
+    }
+
+    const result = await bcrypt.compare(password, userData.password);
+
+    if (!result) {
+        return res.status(401).json({ message: 'Invalid User' });
+    }
+
+    const jwtToken = jwt.sign({ userId: userData.id }, process.env.secretKey);
+
+    return res.status(200).json({ accessToken: jwtToken });
+});
+
+///게시물등록////Assignment 3///////
 ///////////////////////////////////
 
 app.post('/posting', async (req, res) => {
-    const { title, content, user_id } = req.body;
+    const { title, content, user_id, imageUrl } = req.body;
 
     await myDataSource.query(
         `
         INSERT INTO posts (
             title,
             content,
-            user_id
-        ) VALUES (?,?,?)
+            user_id,
+            imageUrl
+        ) VALUES (?,?,?,?)
         `,
-        [title, content, user_id]
+        [title, content, user_id, imageUrl]
     );
     console.log('갓구리');
     res.status(201).json({ message: 'post_created' });
+});
+
+///전체게시물조회////Assignment 4/////
+/////////////////////////////////////
+
+app.get('/posts', async (req, res) => {
+    await myDataSource.query(
+        `SELECT
+      u.id AS userId,
+      u.profile_image AS userProfileImage,
+      p.id AS postingId,
+      p.post_image AS postingImageUrl,
+      p.content AS postingContent
+    FROM users u
+    INNER JOIN posts p ON u.id = p.user_id;
+    `,
+        (err, rows) => {
+            res.status(200).json({ data: rows });
+        }
+    );
+});
+
+//유저게시물조회////Assignment 5/////
+/////////////////////////////////////
+
+app.get('/post/userId/:userId', async (req, res) => {
+    const { userId } = req.params;
+
+    const [postsList] = await myDataSource.query(
+        `SELECT
+      u.id AS userId,
+      u.profile_image AS userProfileImage,
+      JSON_ARRAYAGG(
+        JSON_OBJECT(
+          'postingId', p.id,
+          'postingImageUrl', p.post_image,
+          'postingContent', p.content
+        )
+      ) AS postings
+    FROM posts p
+    INNER JOIN users u ON u.id = p.user_id
+    WHERE u.id = ?
+    GROUP BY u.id;
+    `,
+        [userId]
+    );
+
+    res.status(200).json({ data: postsList });
 });
 
 const PORT = process.env.PORT;
