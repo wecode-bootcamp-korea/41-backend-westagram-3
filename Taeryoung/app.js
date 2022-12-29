@@ -1,12 +1,11 @@
-
-const express = require ("express");
-const cors = require ("cors");
-const morgan = require ("morgan");
+const express = require('express');
+const cors = require('cors');
+const morgan = require('morgan');
 const { DataSource } = require('typeorm');
-const dotenv = require("dotenv");
-dotenv.config()
+const dotenv = require('dotenv');
+dotenv.config();
 
-const app = express()
+const app = express();
 
 app.use(express.json());
 app.use(cors());
@@ -18,64 +17,48 @@ const myDataSource = new DataSource({
     port: process.env.TYPEORM_PORT,
     username: process.env.TYPEORM_USERNAME,
     password: process.env.TYPEORM_PASSWORD,
-    database: process.env.TYPEORM_DATABASE
+    database: process.env.TYPEORM_DATABASE,
 });
 
-myDataSource.initialize()
+myDataSource
+    .initialize()
     .then(() => {
-        console.log("Data Source has been initialized!")
+        console.log('Data Source has been initialized!');
     })
     .catch((err) => {
-        console.error("Error during Data Source initialization", err);
+        console.error('Error during Data Source initialization', err);
         myDataSource.destroy();
-      });
+    });
 
-///유저회원가입////Assignment 2/////
-
-app.post("/signup", async (req, res) => {
-    const {name, email, password} = req.body;
-    
-    await myDataSource.query(
-          `
-        INSERT INTO users (
-            name,
-            email,
-            password
-          ) VALUES (?,?,?)
-          `,
-          [name , email, password]
-        );
-        res.status(201).json({ message: "userCreated" })
+app.get('/ping', function (req, res, next) {
+    res.json({ message: 'pong' });
 });
 
+///유저회원가입////Assignment 2/////
+///////////////////////////////////
 
-///게시글 등록하기////Assignment 3/////
-
-app.post("/posting", async (req, res) => {
-    const {title, content, user_id} = req.body;
+app.post('/signup', async (req, res) => {
+    const { name, email, password, profileImages } = req.body;
 
     await myDataSource.query(
         `
-        INSERT INTO posts (
-            title,
-            content,
-            user_id
-        ) VALUES (?,?,?)
+        INSERT INTO users (
+            name,
+            email,
+            password,
+            profileImage
+
+        ) VALUES (?,?,?,?)
         `,
-        [title, content, user_id]
+        [name, email, password, profileImages]
     );
-    res.status(201).json({ message: "post_created"})
+    res.status(201).json({ message: 'userCreated' });
 });
-
-
-    app.get('/ping', function (req, res, next) {
-        res.json({message: 'pong'})
-    })
 
 const PORT = process.env.PORT;
 
 const start = async () => {
     app.listen(PORT, () => console.log(`server is listening on ${PORT}`));
-}
+};
 
-start()
+start();
