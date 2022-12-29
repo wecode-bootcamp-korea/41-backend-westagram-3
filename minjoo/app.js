@@ -1,5 +1,3 @@
-// 3-2-1. App: 앱의 초기화
-
 const http = require("http");
 const express = require("express");
 const cors = require("cors");
@@ -9,7 +7,6 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const routes = require("./routes");
-
 const app = express();
 
 app.use(cors());
