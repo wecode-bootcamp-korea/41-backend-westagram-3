@@ -1,2 +1,2 @@
 .env
-/schema.sql/
+db/schema.sql 

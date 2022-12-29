@@ -10,4 +10,3 @@ CREATE TABLE posts (
 )
 
 -- migrate:down
-
