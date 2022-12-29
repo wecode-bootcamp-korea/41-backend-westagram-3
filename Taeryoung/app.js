@@ -30,7 +30,7 @@ myDataSource.initialize()
         myDataSource.destroy();
       });
 
-///유저회원가입////Assignment 2///// 
+///유저회원가입////Assignment 2/////
 
 app.post("/signup", async (req, res) => {
     const {name, email, password} = req.body;
@@ -46,6 +46,25 @@ app.post("/signup", async (req, res) => {
           [name , email, password]
         );
         res.status(201).json({ message: "userCreated" })
+});
+
+
+///게시글 등록하기////Assignment 3/////
+
+app.post("/posting", async (req, res) => {
+    const {title, content, user_id} = req.body;
+
+    await myDataSource.query(
+        `
+        INSERT INTO posts (
+            title,
+            content,
+            user_id
+        ) VALUES (?,?,?)
+        `,
+        [title, content, user_id]
+    );
+    res.status(201).json({ message: "post_created"})
 });
 
 
