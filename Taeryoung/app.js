@@ -86,7 +86,7 @@ app.post('/signIn', async (req, res) => {
 ///////////////////////////////////
 
 app.post('/posting', async (req, res) => {
-    const { title, content, user_id, imageUrl } = req.body;
+    const { title, content, userId, imageUrl } = req.body;
 
     await myDataSource.query(
         `
@@ -94,29 +94,31 @@ app.post('/posting', async (req, res) => {
             title,
             content,
             user_id,
-            imageUrl
+            image_url
         ) VALUES (?,?,?,?)
-        `,
-        [title, content, user_id, imageUrl]
+        `
+        // [title, content, user_id, imageUrl]
     );
     console.log('갓구리');
     res.status(201).json({ message: 'post_created' });
 });
 
 ///전체게시물조회////Assignment 4/////
-/////////////////////////////////////
+/////////////////////////////////
 
 app.get('/posts', async (req, res) => {
     await myDataSource.query(
-        `SELECT
-      u.id AS userId,
-      u.profile_image AS userProfileImage,
-      p.id AS postingId,
-      p.post_image AS postingImageUrl,
-      p.content AS postingContent
-    FROM users u
-    INNER JOIN posts p ON u.id = p.user_id;
-    `,
+        `
+        SELECT
+            u.id AS userId,
+            u.profile_image AS userProfileImage,
+            p.id AS postingId,
+            p.post_image AS postingImageUrl,
+            p.content AS postingContent
+        FROM users u
+        INNER JOIN posts p 
+        ON u.id = p.user_id;
+        `,
         (err, rows) => {
             res.status(200).json({ data: rows });
         }
