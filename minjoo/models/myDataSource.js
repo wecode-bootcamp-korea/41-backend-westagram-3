@@ -10,6 +10,7 @@ const myDataSource = new DataSource({
 });
 
 myDataSource
+  // DB 커넥션 연결
   .initialize()
   .then(() => {
     console.log("Data Source has been initialized!");
