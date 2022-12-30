@@ -1,8 +1,8 @@
 const postService = require("../services/postService");
 
-const create = async (request, response) => {
+const createUserPost = async (request, response) => {
   try {
-    await postService.create(request);
+    await postService.createUserPost(request);
     return response.status(201).json({ message: "postCreated" });
   } catch (err) {
     console.error(err);
@@ -12,9 +12,9 @@ const create = async (request, response) => {
   }
 };
 
-const userPost = async (request, response) => {
+const inquireUserPost = async (request, response) => {
   try {
-    const results = await postService.userPost(request);
+    const results = await postService.inquireUserPost(request);
     return response.status(200).json({ data: results });
   } catch (err) {
     return response
@@ -23,10 +23,10 @@ const userPost = async (request, response) => {
   }
 };
 
-const inquire = async (request, response) => {
+const inquireAllPost = async (request, response) => {
   try {
     console.log(1);
-    const results = await postService.inquire();
+    const results = await postService.inquireAllPost();
     return response.status(200).json({ data: results });
   } catch (err) {
     return response
@@ -35,9 +35,9 @@ const inquire = async (request, response) => {
   }
 };
 
-const modify = async (request, response) => {
+const modifyUserPost = async (request, response) => {
   try {
-    const results = await postService.modify(request);
+    const results = await postService.modifyUserPost(request);
     return response.status(200).json({ data: results });
   } catch (err) {
     return response
@@ -46,9 +46,9 @@ const modify = async (request, response) => {
   }
 };
 
-const del = async (request, response) => {
+const deleteUserPost = async (request, response) => {
   try {
-    await postService.del(request);
+    await postService.deleteUserPost(request);
     return response.status(200).json({ message: "postingDeleted" });
   } catch (err) {
     return response
@@ -58,9 +58,9 @@ const del = async (request, response) => {
 };
 
 module.exports = {
-  create,
-  userPost,
-  inquire,
-  modify,
-  del,
+  createUserPost,
+  inquireUserPost,
+  inquireAllPost,
+  modifyUserPost,
+  deleteUserPost,
 };

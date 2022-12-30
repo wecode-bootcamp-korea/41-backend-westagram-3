@@ -1,20 +1,20 @@
 const postDao = require("../models/postDao");
 
-const create = async (request) => {
+const createUserPost = async (request) => {
   const { title, content, imageUrl } = request.body;
-  return await postDao.create(title, content, request.userId, imageUrl);
+  return await postDao.createUserPost(title, content, request.userId, imageUrl);
 };
-const userPost = async (request) => {
+const inquireUserPost = async (request) => {
   const userId = request.userId;
-  const results = await postDao.userPost(userId);
+  const results = await postDao.inquireUserPost(userId);
   return results;
 };
 
-const inquire = async () => {
-  const results = await postDao.inquire();
+const inquireAllPost = async () => {
+  const results = await postDao.inquireAllPost();
   return results;
 };
-const modify = async (request) => {
+const modifyUserPost = async (request) => {
   const userId = request.userId;
   const postingId = request.params.postingId;
   const { content } = request.body;
@@ -26,10 +26,10 @@ const modify = async (request) => {
     throw err;
   }
 
-  const results = await postDao.modify(content, postingId);
+  const results = await postDao.modifyUserPost(content, postingId);
   return results;
 };
-const del = async (request) => {
+const deleteUserPost = async (request) => {
   const postingId = request.params.postingId;
   const userId = request.userId;
 
@@ -40,13 +40,13 @@ const del = async (request) => {
     throw err;
   }
 
-  return await postDao.del(postingId);
+  return await postDao.deleteUserPost(postingId);
 };
 
 module.exports = {
-  create,
-  userPost,
-  inquire,
-  modify,
-  del,
+  createUserPost,
+  inquireUserPost,
+  inquireAllPost,
+  modifyUserPost,
+  deleteUserPost,
 };

@@ -23,7 +23,7 @@ const check = async (userId, postingId) => {
   }
 };
 
-const create = async (title, content, userId, imageUrl) => {
+const createUserPost = async (title, content, userId, imageUrl) => {
   try {
     return await myDataSource.query(
       `INSERT INTO posts (title,content,user_id,image_url) VALUES (?,?,?,?);`,
@@ -36,7 +36,7 @@ const create = async (title, content, userId, imageUrl) => {
   }
 };
 
-const userPost = async (userId) => {
+const inquireUserPost = async (userId) => {
   try {
     return await myDataSource.query(
       `SELECT
@@ -60,7 +60,7 @@ const userPost = async (userId) => {
   }
 };
 
-const inquire = async () => {
+const inquireAllPost = async () => {
   try {
     return await myDataSource.query(
       `SELECT 
@@ -80,7 +80,7 @@ const inquire = async () => {
   }
 };
 
-const modify = async (content, postingId) => {
+const modifyUserPost = async (content, postingId) => {
   try {
     await myDataSource.query(
       `UPDATE 
@@ -110,7 +110,7 @@ const modify = async (content, postingId) => {
   }
 };
 
-const del = async (postingId) => {
+const deleteUserPost = async (postingId) => {
   try {
     return await myDataSource.query(
       `DELETE 
@@ -127,9 +127,9 @@ const del = async (postingId) => {
 
 module.exports = {
   check,
-  create,
-  userPost,
-  inquire,
-  modify,
-  del,
+  createUserPost,
+  inquireUserPost,
+  inquireAllPost,
+  modifyUserPost,
+  deleteUserPost,
 };
