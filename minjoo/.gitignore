@@ -750,3 +750,6 @@ my_settings.py
 
 #VScode
 .vscode/
+
+#개인적으로 참고하는 파일들
+_참고파일_/
