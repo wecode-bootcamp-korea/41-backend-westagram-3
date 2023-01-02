@@ -6,7 +6,9 @@ const createPost = async (req, res) => {
     const { title, content, imageUrl } = req.body;
 
     if (!title || !content || !imageUrl) {
-      return res.status(400).json({ message: "KEY_ERROR" });
+      const err = new Error("KEY_ERROR");
+      err.statusCode = 400;
+      throw err;
     }
     await postService.createPost(title, content, req.userId, imageUrl);
     return res.status(201).json({
@@ -35,7 +37,9 @@ const showUserPost = async (req, res) => {
     const { userId } = req.params;
 
     if (!userId) {
-      return res.status(400).json({ message: "KEY_ERROR" });
+      const err = new Error("KEY_ERROR");
+      err.statusCode = 400;
+      throw err;
     }
     postList = await postService.showUserPost(userId);
     return res.status(201).json({ data: postList });
@@ -53,7 +57,9 @@ const modifyUserPost = async (req, res) => {
     const userId = req.userId;
 
     if (!content || !postId) {
-      return res.status(400).json({ message: "KEY_ERROR" });
+      const err = new Error("KEY_ERROR");
+      err.statusCode = 400;
+      throw err;
     }
     // [postingContent, userId, id]
     modifiedPost = await postService.modifyUserPost(content, userId, postId);
@@ -70,7 +76,9 @@ const deletePost = async (req, res) => {
     const { postId } = req.params;
 
     if (!postId) {
-      return res.status(400).json({ message: "KEY_ERROR" });
+      const err = new Error("KEY_ERROR");
+      err.statusCode = 400;
+      throw err;
     }
     await postService.deletePost(postId);
     return res.status(200).json({

@@ -6,7 +6,9 @@ const signUp = async (req, res) => {
     const { name, email, password, profileImage } = req.body;
 
     if (!name || !email || !password || !profileImage) {
-      return res.status(400).json({ message: "KEY_ERROR" });
+      const err = new Error("KEY_ERROR");
+      err.statusCode = 400;
+      throw err;
     }
 
     await userService.signUp(name, email, password, profileImage);
@@ -25,7 +27,9 @@ const login = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: "KEY_ERROR" });
+      const err = new Error("KEY_ERROR");
+      err.statusCode = 400;
+      throw err;
     }
 
     jwtToken = await userService.login(email, password);

@@ -7,7 +7,9 @@ const likes = async (req, res) => {
     const { postId } = req.params;
 
     if (!postId) {
-      return res.status(400).json({ message: "PARAM_ERROR" });
+      const err = new Error("KEY_ERROR");
+      err.statusCode = 400;
+      throw err;
     }
 
     result = await likeService.likes(userId, postId);
