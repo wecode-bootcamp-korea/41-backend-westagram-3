@@ -1,1 +1,1 @@
-const InitialSettings = "초기 세팅입니다."
+const 초기세팅 = "초기 세팅입니다."
